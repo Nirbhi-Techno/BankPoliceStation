@@ -46,18 +46,37 @@
 
     <script>
         // Initialize the map centered on India
-        const map = L.map('map').setView([20.5937, 78.9629], 5);
+        const map = L.map('map', {
+            center: [20.5937, 78.9629],
+            zoom: 5
+        });
 
         // Add OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        });
+
+        // Bhuvan WMS Base Layer
+        const bhuvanLayer = L.tileLayer.wms("https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms", {
+        layers: 'india3',
+        format: 'image/png',
+        transparent: true
+        });
+
+        // Add both layers to a Layer Control
+        const baseLayers = {
+            "OpenStreetMap": osmLayer,
+            "Bhuvan": bhuvanLayer
+        };
+
+        // Set OpenStreetMap as the default layer
+        osmLayer.addTo(map);
 
         // Initialize marker cluster group and marker storage
         const markers = L.markerClusterGroup();
         const markerMap = {}; // To store markers by name
 
-        // Define colors for different types of cateogry
+        // Define colors for different types of category
         const typeColors = {
             "Police": "red",
             "Bank": "blue",
@@ -148,8 +167,8 @@
         // Load the Excel file and populate the map
         loadXLSXData(filePath);
 
+        // Add the Layer Control to the map
+        L.control.layers(baseLayers).addTo(map);
     </script>
-    
 </body>
 </html>
-
